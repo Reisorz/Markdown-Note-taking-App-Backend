@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -28,8 +29,13 @@ public class NoteController {
     }
 
     @PostMapping("/save-note")
-    public ResponseEntity<NoteEntity> saveNote(@RequestBody NoteEntity note) {
-
-        return null;
+    public ResponseEntity<NoteEntity> saveNote(@RequestBody NoteRequest noteRequest) {
+        NoteEntity note = new NoteEntity();
+        try {
+            note = noteService.addNote(noteRequest);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return ResponseEntity.ok(note);
     }
 }

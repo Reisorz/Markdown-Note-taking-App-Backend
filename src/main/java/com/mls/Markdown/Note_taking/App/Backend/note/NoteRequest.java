@@ -1,7 +1,5 @@
 package com.mls.Markdown.Note_taking.App.Backend.note;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
 import lombok.*;
 
 @Data
