@@ -10,7 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/note")
-@CrossOrigin(value = "http://localhost:4200")
+@CrossOrigin(origins = "http://localhost:4200")
 public class NoteController {
 
     @Autowired
@@ -36,6 +36,12 @@ public class NoteController {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        return ResponseEntity.ok(note);
+    }
+
+    @GetMapping("/get-note-by-id/{id}")
+    public ResponseEntity<NoteEntity> getNoteById (@PathVariable Long id) {
+        NoteEntity note = noteService.getNoteById(id);
         return ResponseEntity.ok(note);
     }
 }

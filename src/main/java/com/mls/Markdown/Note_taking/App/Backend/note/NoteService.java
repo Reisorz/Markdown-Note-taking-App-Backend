@@ -28,6 +28,10 @@ public class NoteService {
         return noteRepository.findAll();
     }
 
+    public NoteEntity getNoteById(Long id) {
+        return noteRepository.findById(id).orElse(null);
+    }
+
     public NoteEntity addNote(NoteRequest noteRequest) throws IOException {
 
         //Create the .md file
