@@ -32,16 +32,26 @@ public class NoteService {
         return noteRepository.findById(id).orElse(null);
     }
 
-    public NoteEntity addNote(NoteRequest noteRequest) throws IOException {
+    public NoteEntity createNote(NoteRequest noteRequest) throws IOException {
 
         //Create the .md file
-        String fileName = noteRequest.getTitle().replaceAll("\\s+", "_") + ".md";
+        String baseFileName = noteRequest.getTitle().replaceAll("\\s+", "_");
+        String fileName = baseFileName + ".md";
         Path filePath = Paths.get(uploadsDirectory, fileName);
 
         //Make sure uploads directory exist
         if(!Files.exists(filePath.getParent())) {
             Files.createDirectories(filePath.getParent());
         }
+
+        //Check duplicated file names
+        int count = 0;
+        while (Files.exists(filePath)) {
+            count++;
+            fileName = baseFileName + "_" + count + ".md";
+            filePath = Paths.get(uploadsDirectory, fileName);
+        }
+
 
         //Write the content in the .md file
         Files.writeString(filePath, noteRequest.getMarkdownContent());
@@ -51,7 +61,7 @@ public class NoteService {
 
         //Create note and save it in the database
         NoteEntity note = new NoteEntity();
-        note.setTitle(noteRequest.getTitle());
+        note.setTitle(noteRequest.getTitle() + " " + count);
         note.setHtmlContent(htmlContent);
         note.setMarkdownContent(noteRequest.getMarkdownContent());
         note.setFilePath(filePath.toString());

@@ -28,11 +28,11 @@ public class NoteController {
         return noteService.listAllNotes();
     }
 
-    @PostMapping("/save-note")
-    public ResponseEntity<NoteEntity> saveNote(@RequestBody NoteRequest noteRequest) {
+    @PostMapping("/create-note")
+    public ResponseEntity<NoteEntity> createNote(@RequestBody NoteRequest noteRequest) {
         NoteEntity note = new NoteEntity();
         try {
-            note = noteService.addNote(noteRequest);
+            note = noteService.createNote(noteRequest);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
