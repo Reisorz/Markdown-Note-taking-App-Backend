@@ -61,7 +61,11 @@ public class NoteService {
 
         //Create note and save it in the database
         NoteEntity note = new NoteEntity();
-        note.setTitle(noteRequest.getTitle() + " " + count);
+        if (count != 0) {
+            note.setTitle(noteRequest.getTitle() + " " + count);
+        } else {
+            note.setTitle(noteRequest.getTitle());
+        }
         note.setHtmlContent(htmlContent);
         note.setMarkdownContent(noteRequest.getMarkdownContent());
         note.setFilePath(filePath.toString());
