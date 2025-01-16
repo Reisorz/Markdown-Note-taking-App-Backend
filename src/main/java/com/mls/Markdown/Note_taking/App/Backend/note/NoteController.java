@@ -39,6 +39,17 @@ public class NoteController {
         return ResponseEntity.ok(note);
     }
 
+    @PutMapping("/update-note")
+    public ResponseEntity<NoteEntity> updateNote(@RequestBody NoteEntity note) {
+        NoteEntity existingNote = new NoteEntity();
+        try {
+            existingNote = noteService.updateNote(note);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return ResponseEntity.ok(existingNote);
+    }
+
     @GetMapping("/get-note-by-id/{id}")
     public ResponseEntity<NoteEntity> getNoteById (@PathVariable Long id) {
         NoteEntity note = noteService.getNoteById(id);

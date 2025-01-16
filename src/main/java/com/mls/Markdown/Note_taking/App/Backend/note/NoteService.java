@@ -80,5 +80,47 @@ public class NoteService {
         return renderer.render(parser.parse(markdown));
     }
 
+    public NoteEntity updateNote (NoteEntity note) throws IOException {
+
+        // Find the existing note by ID
+        NoteEntity existingNote = noteRepository.findById(note.getId()).orElse(null);
+
+        // Get the old file path
+        Path oldFilePath = Paths.get(existingNote.getFilePath());
+
+        // New file name
+        String newBaseFileName = note.getTitle().replaceAll("\\s+", "_");
+        String newFileName = newBaseFileName + ".md";
+        Path newFilePath = Paths.get(uploadsDirectory, newFileName);
+
+        // Deletes old file
+        Files.delete(oldFilePath);
+
+        //Check duplicated file names
+        int count = 0;
+        while (Files.exists(newFilePath)) {
+            count++;
+            newFileName = newBaseFileName + "_" + count + ".md";
+            newFilePath = Paths.get(uploadsDirectory, newFileName);
+        }
+
+        //Creates new file and writes markdown content
+        Files.writeString(newFilePath, note.getMarkdownContent());
+
+        // Convert it to HTML
+        String htmlContent = convertMarkdownToHtml(note.getMarkdownContent());
+
+        // Update the Note entity in DB
+        if (count != 0) {
+            existingNote.setTitle(note.getTitle() + " " + count);
+        } else {
+            existingNote.setTitle(note.getTitle());
+        }
+        existingNote.setMarkdownContent(note.getMarkdownContent());
+        existingNote.setHtmlContent(htmlContent);
+        existingNote.setFilePath(newFilePath.toString());
+        return noteRepository.save(existingNote);
+    }
+
 
 }
