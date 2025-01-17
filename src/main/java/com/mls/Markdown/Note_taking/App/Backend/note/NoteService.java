@@ -2,6 +2,7 @@ package com.mls.Markdown.Note_taking.App.Backend.note;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -13,6 +14,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.parser.Parser;
+import org.springframework.web.multipart.MultipartFile;
 
 
 @Service
@@ -120,6 +122,49 @@ public class NoteService {
         existingNote.setHtmlContent(htmlContent);
         existingNote.setFilePath(newFilePath.toString());
         return noteRepository.save(existingNote);
+    }
+
+    public NoteEntity uploadNote(MultipartFile file) throws IOException {
+
+        String originalFileName = file.getOriginalFilename();
+        String fileName = originalFileName.substring(0, originalFileName.length() - 3);
+        String fileContent = new String(file.getBytes());
+
+        //Create the .md file
+        String baseFileName = fileName.replaceAll("\\s+", "_");
+        String newFileName = baseFileName + ".md";
+        Path filePath = Paths.get(uploadsDirectory, newFileName);
+
+        //Make sure uploads directory exist
+        if(!Files.exists(filePath.getParent())) {
+            Files.createDirectories(filePath.getParent());
+        }
+
+        //Check duplicated file names
+        int count = 0;
+        while (Files.exists(filePath)) {
+            count++;
+            newFileName = baseFileName + "_" + count + ".md";
+            filePath = Paths.get(uploadsDirectory, newFileName);
+        }
+
+        //Write the content in the .md file
+        Files.writeString(filePath, fileContent);
+
+        //Convert Markdonw content into HTML
+        String htmlContent = convertMarkdownToHtml(fileContent);
+
+        //Create note and save it in the database
+        NoteEntity note = new NoteEntity();
+        if (count != 0) {
+            note.setTitle(fileName + " " + count);
+        } else {
+            note.setTitle(fileName);
+        }
+        note.setHtmlContent(htmlContent);
+        note.setMarkdownContent(fileContent);
+        note.setFilePath(filePath.toString());
+        return noteRepository.save(note);
     }
 
 
