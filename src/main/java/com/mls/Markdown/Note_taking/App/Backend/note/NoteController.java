@@ -7,7 +7,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/note")
@@ -66,5 +68,21 @@ public class NoteController {
     public ResponseEntity<NoteEntity> getNoteById (@PathVariable Long id) {
         NoteEntity note = noteService.getNoteById(id);
         return ResponseEntity.ok(note);
+    }
+
+    @DeleteMapping("/delete-note/{id}")
+    public ResponseEntity<Map<String, Boolean>> deleteNoteById (@PathVariable Long id) {
+        NoteEntity note = noteService.getNoteById(id);
+        if (note == null){
+            throw new RuntimeException("Note with id " + id + " not found.");
+        }
+        try {
+            noteService.deleteNote(note);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("deleted", Boolean.TRUE);
+        return ResponseEntity.ok(response);
     }
 }

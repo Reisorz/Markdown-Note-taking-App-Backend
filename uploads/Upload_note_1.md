@@ -1,5 +1,0 @@
-**Bold**
-
-*Italic*
-
-# First Title

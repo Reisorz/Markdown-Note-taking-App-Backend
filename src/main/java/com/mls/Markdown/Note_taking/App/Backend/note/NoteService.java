@@ -167,5 +167,11 @@ public class NoteService {
         return noteRepository.save(note);
     }
 
+    public void deleteNote(NoteEntity note) throws IOException {
+        noteRepository.delete(note);
+        Path filePath = Paths.get(note.getFilePath());
+        Files.delete(filePath);
+    }
+
 
 }
