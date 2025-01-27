@@ -3,7 +3,10 @@ package com.mls.Markdown.Note_taking.App.Backend.grammar_checker;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class GrammarCheckerService {
@@ -14,8 +17,8 @@ public class GrammarCheckerService {
         this.webClient = WebClient.create("https://api.languagetool.org/v2");
     }
 
-    public Map<String, Object> checkGrammar(String text, String language) {
-        return webClient.post()
+    public List<GrammarResponse> checkGrammar(String text, String language) {
+        LanguageToolEntity response = webClient.post()
                 .uri(uriBuilder -> uriBuilder
                         .path("/check")
                         .queryParam("text", text)
@@ -23,7 +26,19 @@ public class GrammarCheckerService {
                         .build())
                 .header("Content-Type", "application/json")
                 .retrieve()
-                .bodyToMono(Map.class)
+                .bodyToMono(LanguageToolEntity.class)
                 .block();
+
+        List<GrammarResponse> matches = new ArrayList<GrammarResponse>();
+        for (MatchesEntity match: response.getMatches()) {
+            GrammarResponse matchToAdd = GrammarResponse.builder()
+                    .message(match.getMessage())
+                    .sentence(match.getSentence())
+                    .replacements(match.getReplacements())
+                    .build();
+            matches.add(matchToAdd);
+        }
+
+        return matches;
     }
 }
