@@ -14,6 +14,6 @@ import java.util.Map;
 @Setter
 public class GrammarResponse implements Serializable {
     private String message;
-    private List<MatchesEntity.Replacement> replacements;
+    private List<String> replacements;
     private String sentence;
 }

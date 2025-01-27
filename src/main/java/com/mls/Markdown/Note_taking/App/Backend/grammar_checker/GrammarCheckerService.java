@@ -31,10 +31,15 @@ public class GrammarCheckerService {
 
         List<GrammarResponse> matches = new ArrayList<GrammarResponse>();
         for (MatchesEntity match: response.getMatches()) {
+
+            List<String> replacementValues = match.getReplacements().stream()
+                    .map(MatchesEntity.Replacement::getValue)
+                    .toList();
+
             GrammarResponse matchToAdd = GrammarResponse.builder()
                     .message(match.getMessage())
                     .sentence(match.getSentence())
-                    .replacements(match.getReplacements())
+                    .replacements(replacementValues)
                     .build();
             matches.add(matchToAdd);
         }
