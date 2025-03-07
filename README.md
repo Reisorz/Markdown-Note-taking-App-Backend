@@ -2,6 +2,8 @@
 
 **Markdown note taking app** permits to make notes in markdown and translate them into HTML, and save them in .md files and in the database. Also you can check the grammar of your notes using an external api called LanguageTool.
 
+[**Frontend repository here!**](https://github.com/Reisorz/Markdown-Note-taking-App-Frontend)
+
 
 ## 🔑Key Features
 
